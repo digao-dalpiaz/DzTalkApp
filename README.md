@@ -14,6 +14,8 @@
 - [Events](#events)
 - [How to send and read custom types](#how-to-send-and-read-custom-types)
 
+![Demo Screen](images/demo_screen.png)
+
 ## Component Description
 
 DzTalkApp allows you to send data between distinct applications. You can send simple data type like Integer or String, and even complex data, like a record.

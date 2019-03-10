@@ -165,7 +165,7 @@ object Form1: TForm1
     AutoFind = True
     MyWindowName = 'WND_APP1'
     DestWindowName = 'WND_APP2'
-    Left = 240
-    Top = 40
+    Left = 328
+    Top = 48
   end
 end
