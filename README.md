@@ -133,8 +133,8 @@ You can send record structure. To do this, ensure you are always using `packed r
 type
   TData = packed record
     Number: Integer;
-	Text: ShortString;
-	Flag: Boolean;
+    Text: ShortString;
+    Flag: Boolean;
   end;
   
 var R: TData;
@@ -160,7 +160,7 @@ end;
 
 ### Simple types:
 
-**To send a Double type:
+**To send a Double type:**
 
 ```delphi
 var D: Double;
@@ -169,7 +169,7 @@ begin
 end;
 ```
 
-**To receive a Double type (OnMessage event):
+**To receive a Double type (OnMessage event):**
 
 ```delphi
 var D: Double;
