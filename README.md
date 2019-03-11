@@ -6,6 +6,7 @@
 ![Platforms](https://img.shields.io/badge/Platforms-Win32%20and%20Win64-red.svg)
 ![Auto Install](https://img.shields.io/badge/-Auto%20Install%20App-orange.svg)
 
+- [What's New](#whats-new)
 - [Component Description](#component-description)
 - [Installing](#installing)
 - [How to use](#how-to-use)
@@ -15,6 +16,14 @@
 - [How to send and read custom types](#how-to-send-and-read-custom-types)
 
 ![Demo Screen](images/demo_screen.png)
+
+## What's New
+
+- 03/11/2019
+
+   - Add Result Code possibility.
+   - Add method to send Stream data.
+   - OnMessage event declaration changed. :warning:
 
 ## Component Description
 
@@ -84,7 +93,8 @@ Find and set destination window handle by the name defined in `DestWindowName` p
 procedure Send(ID: Word); overload;
 procedure Send(ID: Word; N: Integer); overload;
 procedure Send(ID: Word; A: AnsiString); overload;
-procedure Send(ID: Word; P: Pointer; Size: Integer); overload;
+procedure Send(ID: Word; P: Pointer; Size: Cardinal); overload;
+procedure Send(ID: Word; S: TMemoryStream); overload;
 ```
 
 Use **Send** methods to send a message to destination application. To send messages, the component needs to be enabled (use `Enable` method) and needs a destination window name defined (use `DestWindowName` property).
@@ -99,6 +109,8 @@ The overloads methods allows you to send:
 
 - A command with any kind of data parameter, using `P` parameter and specifying the size of data parameter.
 
+- A command with a memory data stream, using `S` parameter.
+
 ```delphi
 function AsString: AnsiString;
 ```
@@ -111,15 +123,29 @@ function AsInteger: Integer;
 
 Use this function inside the OnMessage event to get a message data as Integer type.
 
+```delphi
+procedure AsStream(Stm: TStream);
+```
+
+Use this procedure inside the OnMessage event to get a message data as TStream type (the object need to be created before call this method).
+
+```delphi
+function GetResult: Integer;
+```
+
+You can use this function right after call `Send` method to get the result code of the message received by the destination app. You can set this result in **OnMessage** event at destination application. *Please see description of OnMessage event.*
+
 ## Events
 
 ```delphi
-procedure OnMessage(Sender: TObject; From: HWND; ID: Word; P: Pointer);
+procedure OnMessage(Sender: TObject; From: HWND; ID: Word; P: Pointer; Size: Cardinal; var Result: Integer);
 ```
 
-This method will occur in the destination app when a message is received. The `From` parameter indicates the handle of the source window. The `ID` parameter indicates the code of the message used in the `Send` method at the source app. The `P` parameter has the pointer of the message data.
+This method will occur in the destination app when a message is received. The `From` parameter indicates the handle of the source window. The `ID` parameter indicates the code of the message used in the `Send` method at the source app. The `P` parameter has the pointer of the message data. The `Size` parameter allows you to know the size of the data received.
 
-You can use the `AsString` or `AsInteger` functions to read messages as String and Integer data types.
+The `Result` parameter allows you to set a result code to return to the sender application (the sender application should use `GetResult` function right after use `Send` method to read this result code).
+
+You can use the `AsString`, `AsInteger` or `AsStream` methods to read messages as String and Integer data types.
 
 ## How to send and read custom types
 

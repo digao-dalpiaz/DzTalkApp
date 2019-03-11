@@ -10,7 +10,8 @@ type
   TForm1 = class(TForm)
     TA: TDzTalkApp;
     M: TMemo;
-    procedure TAMessage(Sender: TObject; From: HWND; ID: Word; P: Pointer);
+    procedure TAMessage(Sender: TObject; From: HWND; ID: Word; P: Pointer;
+      Size: Cardinal; var Result: Integer);
   private
     { Private declarations }
   public
@@ -24,7 +25,7 @@ implementation
 
 {$R *.dfm}
 
-uses System.StrUtils;
+uses System.StrUtils, UFrmStream;
 
 type
   TRecordData = packed record
@@ -33,8 +34,11 @@ type
     Flag: Boolean;
   end;
 
-procedure TForm1.TAMessage(Sender: TObject; From: HWND; ID: Word; P: Pointer);
+procedure TForm1.TAMessage(Sender: TObject; From: HWND; ID: Word; P: Pointer;
+  Size: Cardinal; var Result: Integer);
 var R: TRecordData;
+  S: TMemoryStream;
+  B: Vcl.Graphics.TBitmap;
 begin
   if ID<=1000 then
   begin
@@ -50,6 +54,27 @@ begin
 
         M.Lines.Add(Format('Record received: Number=%d / Text=%s / Flag=%s',
           [R.Number, R.Text, IfThen(R.Flag, 'TRUE', 'FALSE')]));
+      end;
+
+    1005: //receive stream (screen shot)
+      begin
+        B := Vcl.Graphics.TBitmap.Create;
+        try
+          S := TMemoryStream.Create;
+          try
+            TA.AsStream(S);
+            S.Position := 0;
+            B.LoadFromStream(S);
+          finally
+            S.Free;
+          end;
+          FrmStream.Img.Picture.Assign(B);
+          FrmStream.Show;
+        finally
+          B.Free;
+        end;
+
+        Result := 9999;
       end;
 
     else M.Lines.Add(Format('Unknown command ID: %d', [ID]));

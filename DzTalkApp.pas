@@ -32,7 +32,8 @@ interface
 uses System.Classes, Winapi.Windows, Winapi.Messages, System.SysUtils;
 
 type
-  TOnMessage = procedure(Sender: TObject; From: HWND; ID: Word; P: Pointer) of object;
+  TOnMessage = procedure(Sender: TObject; From: HWND; ID: Word; P: Pointer; Size: Cardinal;
+    var Result: Integer) of object;
 
   TDzTalkApp = class(TComponent)
   private
@@ -51,11 +52,13 @@ type
 
     LastFrom: HWND; //last received handle
     LastData: Pointer; //last data pointer
+    LastSize: Cardinal; //last size of data
+    LastResult: Integer;
 
     procedure WndProc(var Msg: TMessage);
-    procedure Msg_CopyData(D: TWMCopyData);
+    procedure Msg_CopyData(var D: TWMCopyData);
 
-    procedure IntEnv(ID: Word; P: Pointer; Size: Integer);
+    procedure IntEnv(ID: Word; P: Pointer; Size: Cardinal);
     procedure SetMyWindowName(const Value: String);
   protected
     procedure Loaded; override;
@@ -71,13 +74,17 @@ type
     procedure Send(ID: Word); overload;
     procedure Send(ID: Word; N: Integer); overload;
     procedure Send(ID: Word; A: AnsiString); overload;
-    procedure Send(ID: Word; P: Pointer; Size: Integer); overload;
+    procedure Send(ID: Word; P: Pointer; Size: Cardinal); overload;
+    procedure Send(ID: Word; S: TMemoryStream); overload;
 
     function AsString: AnsiString; //read received message as String
     function AsInteger: Integer; //read received message as Integer
+    procedure AsStream(Stm: TStream); //read received message as Stream
 
     property Active: Boolean read FActive;
     property ToHandle: HWND read FToHandle write FToHandle;
+
+    function GetResult: Integer;
   published
     property AutoActivate: Boolean read FAutoActivate write FAutoActivate default False;
     property AutoFind: Boolean read FAutoFind write FAutoFind default False;
@@ -172,37 +179,36 @@ begin
       Application.HandleException(Self);
     end;
 
-    Msg.Result := 0;
+    //Msg.Result := 0;
   end
     else
       Msg.Result := DefWindowProc(WinHandle, Msg.Msg, Msg.WParam, Msg.LParam);
 end;
 
-procedure TDzTalkApp.Msg_CopyData(D: TWMCopyData);
-var
-  From: HWND;
-  dI: Cardinal;
-  dP: Pointer;
+procedure TDzTalkApp.Msg_CopyData(var D: TWMCopyData);
+var Res: Integer;
 begin
-  From := D.From; {Msg.WParam}
-  dI := D.CopyDataStruct.dwData;
-  dP := D.CopyDataStruct.lpData;
+  LastFrom := D.From;
+  LastData := D.CopyDataStruct.lpData;
+  LastSize := D.CopyDataStruct.cbData;
 
-  LastFrom := From;
-  LastData := dP;
-
+  Res := 0;
   if Assigned(FOnMessage) then
-    FOnMessage(Self, From, dI, dP);
+    FOnMessage(Self, D.From,
+      D.CopyDataStruct.dwData, D.CopyDataStruct.lpData, D.CopyDataStruct.cbData, Res);
+
+  D.Result := Res;
 end;
 
-procedure TDzTalkApp.IntEnv(ID: Word; P: Pointer; Size: Integer);
+procedure TDzTalkApp.IntEnv(ID: Word; P: Pointer; Size: Cardinal);
 var D: TCopyDataStruct;
 begin
   D.dwData := ID;
   D.cbData := Size;
   D.lpData := P;
 
-  SendMessage(FToHandle, CONST_WM, WinHandle, Integer(@D));
+  LastResult :=
+    SendMessage(FToHandle, CONST_WM, WinHandle, Integer(@D));
 end;
 
 procedure TDzTalkApp.Send(ID: Word);
@@ -220,7 +226,12 @@ begin
   Send(ID, PAnsiChar(A), Length(A)+1);
 end;
 
-procedure TDzTalkApp.Send(ID: Word; P: Pointer; Size: Integer);
+procedure TDzTalkApp.Send(ID: Word; S: TMemoryStream);
+begin
+  Send(ID, S.Memory, S.Size);
+end;
+
+procedure TDzTalkApp.Send(ID: Word; P: Pointer; Size: Cardinal);
 begin
   if not FActive then
     raise Exception.Create('TalkApp is not active to send');
@@ -252,6 +263,16 @@ end;
 function TDzTalkApp.AsInteger: Integer;
 begin
   Result := Integer(LastData^);
+end;
+
+procedure TDzTalkApp.AsStream(Stm: TStream);
+begin
+  Stm.Write(LastData^, LastSize);
+end;
+
+function TDzTalkApp.GetResult: Integer;
+begin
+  Result := LastResult;
 end;
 
 end.

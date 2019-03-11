@@ -26,6 +26,7 @@ object Form1: TForm1
     AutoFind = True
     MyWindowName = 'WND_APP2'
     DestWindowName = 'WND_APP1'
+    Synchronous = True
     OnMessage = TAMessage
     Left = 224
     Top = 64

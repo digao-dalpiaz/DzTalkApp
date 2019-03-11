@@ -1,8 +1,8 @@
-object Form1: TForm1
+object FrmMain: TFrmMain
   Left = 0
   Top = 0
   Caption = 'App1'
-  ClientHeight = 264
+  ClientHeight = 297
   ClientWidth = 447
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -54,6 +54,20 @@ object Form1: TForm1
     Width = 22
     Height = 13
     Caption = 'Text'
+  end
+  object Label7: TLabel
+    Left = 144
+    Top = 264
+    Width = 34
+    Height = 13
+    Caption = 'Result:'
+  end
+  object LbResult: TLabel
+    Left = 192
+    Top = 264
+    Width = 12
+    Height = 13
+    Caption = '---'
   end
   object BtnSendCmd: TButton
     Left = 8
@@ -160,11 +174,21 @@ object Form1: TForm1
     State = cbChecked
     TabOrder = 11
   end
+  object BtnSendStream: TButton
+    Left = 8
+    Top = 248
+    Width = 121
+    Height = 41
+    Caption = 'Send Stream'
+    TabOrder = 12
+    OnClick = BtnSendStreamClick
+  end
   object TA: TDzTalkApp
     AutoActivate = True
     AutoFind = True
     MyWindowName = 'WND_APP1'
     DestWindowName = 'WND_APP2'
+    Synchronous = True
     Left = 328
     Top = 48
   end

@@ -2,13 +2,13 @@ program App1;
 
 uses
   Vcl.Forms,
-  UFrmMain in 'UFrmMain.pas' {Form1};
+  UFrmMain in 'UFrmMain.pas' {FrmMain};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TFrmMain, FrmMain);
   Application.Run;
 end.

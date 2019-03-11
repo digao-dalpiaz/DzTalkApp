@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, DzTalkApp, Vcl.StdCtrls;
 
 type
-  TForm1 = class(TForm)
+  TFrmMain = class(TForm)
     TA: TDzTalkApp;
     BtnSendCmd: TButton;
     EdID: TEdit;
@@ -27,11 +27,15 @@ type
     Label6: TLabel;
     EdRecText: TEdit;
     CkRecFlag: TCheckBox;
+    BtnSendStream: TButton;
+    Label7: TLabel;
+    LbResult: TLabel;
     procedure BtnSendCmdClick(Sender: TObject);
     procedure BtnSendIntegerClick(Sender: TObject);
     procedure BtnSendStringClick(Sender: TObject);
     procedure BtnSendDoubleClick(Sender: TObject);
     procedure BtnSendRecordClick(Sender: TObject);
+    procedure BtnSendStreamClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -39,7 +43,7 @@ type
   end;
 
 var
-  Form1: TForm1;
+  FrmMain: TFrmMain;
 
 implementation
 
@@ -52,7 +56,7 @@ type
     Flag: Boolean;
   end;
 
-procedure TForm1.BtnSendCmdClick(Sender: TObject);
+procedure TFrmMain.BtnSendCmdClick(Sender: TObject);
 var ID: Word;
 begin
   ID := StrToInt(EdID.Text);
@@ -62,17 +66,17 @@ begin
   TA.Send(ID);
 end;
 
-procedure TForm1.BtnSendIntegerClick(Sender: TObject);
+procedure TFrmMain.BtnSendIntegerClick(Sender: TObject);
 begin
   TA.Send(1001, StrToInt( EdInteger.Text ) );
 end;
 
-procedure TForm1.BtnSendStringClick(Sender: TObject);
+procedure TFrmMain.BtnSendStringClick(Sender: TObject);
 begin
   TA.Send(1002, AnsiString(EdString.Text));
 end;
 
-procedure TForm1.BtnSendDoubleClick(Sender: TObject);
+procedure TFrmMain.BtnSendDoubleClick(Sender: TObject);
 var D: Double;
 begin
   D := StrToFloat(EdDouble.Text);
@@ -80,7 +84,7 @@ begin
   TA.Send(1003, @D, SizeOf(D));
 end;
 
-procedure TForm1.BtnSendRecordClick(Sender: TObject);
+procedure TFrmMain.BtnSendRecordClick(Sender: TObject);
 var R: TRecordData;
 begin
   R.Number := StrToInt(EdRecNumber.Text);
@@ -88,6 +92,44 @@ begin
   R.Flag := CkRecFlag.Checked;
 
   TA.Send(1004, @R, SizeOf(R));
+end;
+
+procedure TFrmMain.BtnSendStreamClick(Sender: TObject);
+
+  procedure GetPrintScreen(var B: Vcl.Graphics.TBitmap);
+  var DC: HDC;
+    R: TRect;
+  begin
+    DC := GetDC(0);
+    try
+      Winapi.Windows.GetClientRect(WindowFromDC(DC), R);
+      B.SetSize(R.Width, R.Height);
+
+      BitBlt(B.Canvas.Handle, 0, 0, B.Width, B.Height, DC, 0, 0, SRCCOPY);
+    finally
+      ReleaseDC(0, DC);
+    end;
+  end;
+
+var M: TMemoryStream;
+  B: Vcl.Graphics.TBitmap;
+begin
+  M := TMemoryStream.Create;
+  try
+    B := TBitmap.Create;
+    try
+      GetPrintScreen(B);
+      B.SaveToStream(M);
+    finally
+      B.Free;
+    end;
+
+    TA.Send(1005, M);
+  finally
+    M.Free;
+  end;
+
+  LbResult.Caption := IntToStr(TA.GetResult);
 end;
 
 end.
