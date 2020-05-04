@@ -19,6 +19,10 @@
 
 ## What's New
 
+- 05/03/2020
+
+   - Updated CompInstall to version 1.2
+
 - 03/11/2019
 
    - Add Result Code possibility.
