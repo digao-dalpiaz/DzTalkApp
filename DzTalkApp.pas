@@ -1,6 +1,6 @@
 {------------------------------------------------------------------------------
 TDzTalkApp component
-Developed by Rodrigo Depiné Dalpiaz (digao dalpiaz)
+Developed by Rodrigo Depine Dalpiaz (digao dalpiaz)
 Non visual component to communicate between applications
 
 https://github.com/digao-dalpiaz/DzTalkApp
@@ -38,6 +38,8 @@ type
   TDzTalkApp = class(TComponent)
   private
     WinHandle: HWND; //Handle of VIRTUAL Window created by component
+
+    FAbout: String;
 
     FAutoActivate: Boolean; //auto-activate on component Loaded
     FAutoFind: Boolean; //auto-find destination Window on Send
@@ -86,6 +88,8 @@ type
 
     function GetResult: Integer;
   published
+    property About: String read FAbout;
+
     property AutoActivate: Boolean read FAutoActivate write FAutoActivate default False;
     property AutoFind: Boolean read FAutoFind write FAutoFind default False;
     property MyWindowName: String read FMyWindowName write SetMyWindowName;
@@ -113,6 +117,8 @@ const CONST_WM = WM_COPYDATA; {!}
 constructor TDzTalkApp.Create(AOwner: TComponent);
 begin
   inherited;
+
+  FAbout := 'Digao Dalpiaz / Version 1.1';
 
   FActive := False;
 end;
