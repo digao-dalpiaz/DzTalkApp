@@ -107,6 +107,8 @@ implementation
 
 uses Vcl.Forms;
 
+const STR_VERSION = '1.3';
+
 procedure Register;
 begin
   RegisterComponents('Digao', [TDzTalkApp]);
@@ -118,7 +120,7 @@ constructor TDzTalkApp.Create(AOwner: TComponent);
 begin
   inherited;
 
-  FAbout := 'Digao Dalpiaz / Version 1.2';
+  FAbout := 'Digao Dalpiaz / Version '+STR_VERSION;
 
   FActive := False;
 end;
