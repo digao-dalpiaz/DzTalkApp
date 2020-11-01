@@ -73,7 +73,7 @@ end;
 
 procedure TFrmMain.BtnSendStringClick(Sender: TObject);
 begin
-  TA.Send(1002, AnsiString(EdString.Text));
+  TA.Send(1002, EdString.Text);
 end;
 
 procedure TFrmMain.BtnSendDoubleClick(Sender: TObject);

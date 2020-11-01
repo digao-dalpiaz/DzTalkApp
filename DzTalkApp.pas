@@ -39,12 +39,12 @@ type
   private
     WinHandle: HWND; //Handle of VIRTUAL Window created by component
 
-    FAbout: String;
+    FAbout: string;
 
     FAutoActivate: Boolean; //auto-activate on component Loaded
     FAutoFind: Boolean; //auto-find destination Window on Send
-    FMyWindowName: String;
-    FDestWindowName: String;
+    FMyWindowName: string;
+    FDestWindowName: string;
     FSynchronous: Boolean; //stay locked until other app release OnMessage event
 
     FActive: Boolean;
@@ -61,7 +61,7 @@ type
     procedure Msg_CopyData(var D: TWMCopyData);
 
     procedure IntEnv(ID: Word; P: Pointer; Size: Cardinal);
-    procedure SetMyWindowName(const Value: String);
+    procedure SetMyWindowName(const Value: string);
   protected
     procedure Loaded; override;
   public
@@ -75,11 +75,11 @@ type
 
     procedure Send(ID: Word); overload;
     procedure Send(ID: Word; N: Integer); overload;
-    procedure Send(ID: Word; A: AnsiString); overload;
+    procedure Send(ID: Word; const A: string); overload;
     procedure Send(ID: Word; P: Pointer; Size: Cardinal); overload;
     procedure Send(ID: Word; S: TMemoryStream); overload;
 
-    function AsString: AnsiString; //read received message as String
+    function AsString: string; //read received message as string
     function AsInteger: Integer; //read received message as Integer
     procedure AsStream(Stm: TStream); //read received message as Stream
 
@@ -88,12 +88,12 @@ type
 
     function GetResult: Integer;
   published
-    property About: String read FAbout;
+    property About: string read FAbout;
 
     property AutoActivate: Boolean read FAutoActivate write FAutoActivate default False;
     property AutoFind: Boolean read FAutoFind write FAutoFind default False;
-    property MyWindowName: String read FMyWindowName write SetMyWindowName;
-    property DestWindowName: String read FDestWindowName write FDestWindowName;
+    property MyWindowName: string read FMyWindowName write SetMyWindowName;
+    property DestWindowName: string read FDestWindowName write FDestWindowName;
     property Synchronous: Boolean read FSynchronous write FSynchronous default False;
 
     property OnMessage: TOnMessage read FOnMessage write FOnMessage;
@@ -107,7 +107,7 @@ implementation
 
 uses Vcl.Forms;
 
-const STR_VERSION = '1.3';
+const STR_VERSION = '1.4';
 
 procedure Register;
 begin
@@ -145,7 +145,7 @@ begin
   if FActive then
     raise Exception.Create('TalkApp already active');
 
-  if FMyWindowName='' then
+  if FMyWindowName=string.Empty then
     raise Exception.Create('Window name is blank');
 
   WinHandle := AllocateHWND(WndProc);
@@ -164,7 +164,7 @@ begin
   FActive := False;
 end;
 
-procedure TDzTalkApp.SetMyWindowName(const Value: String);
+procedure TDzTalkApp.SetMyWindowName(const Value: string);
 begin
   if Value<>FMyWindowName then
   begin
@@ -229,9 +229,15 @@ begin
   Send(ID, @N, SizeOf(N));
 end;
 
-procedure TDzTalkApp.Send(ID: Word; A: AnsiString);
+procedure TDzTalkApp.Send(ID: Word; const A: string);
+var S: TStringStream;
 begin
-  Send(ID, PAnsiChar(A), Length(A)+1);
+  S := TStringStream.Create(A, TEncoding.Unicode);
+  try
+    Send(ID, S);
+  finally
+    S.Free;
+  end;
 end;
 
 procedure TDzTalkApp.Send(ID: Word; S: TMemoryStream);
@@ -252,7 +258,7 @@ end;
 procedure TDzTalkApp.FindDestWindow;
 var H: HWND;
 begin
-  if FDestWindowName='' then
+  if FDestWindowName=string.Empty then
     raise Exception.Create('Destination window name is blank');
 
   H := FindWindow(nil, PChar(FDestWindowName));
@@ -263,9 +269,16 @@ begin
     raise EDzTalkAppWndNotFound.Create('Destination app window not found');
 end;
 
-function TDzTalkApp.AsString: AnsiString;
+function TDzTalkApp.AsString: string;
+var S: TStringStream;
 begin
-  Result := PAnsiChar(LastData);
+  S := TStringStream.Create(string.Empty, TEncoding.Unicode);
+  try
+    S.WriteData(LastData, LastSize);
+    Result := S.DataString;
+  finally
+    S.Free;
+  end;
 end;
 
 function TDzTalkApp.AsInteger: Integer;
@@ -275,7 +288,7 @@ end;
 
 procedure TDzTalkApp.AsStream(Stm: TStream);
 begin
-  Stm.Write(LastData^, LastSize);
+  Stm.WriteData(LastData, LastSize);
 end;
 
 function TDzTalkApp.GetResult: Integer;

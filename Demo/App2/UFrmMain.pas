@@ -46,7 +46,7 @@ begin
   end else
   case ID of
     1001: M.Lines.Add('Integer received: '+IntToStr(TA.AsInteger));
-    1002: M.Lines.Add('String received: '+WideString(TA.AsString));
+    1002: M.Lines.Add('String received: '+TA.AsString);
     1003: M.Lines.Add('Double received: '+FloatToStr(Double(P^)));
     1004:
       begin

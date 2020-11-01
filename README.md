@@ -19,6 +19,10 @@
 
 ## What's New
 
+- 11/01/2020 (Version 1.4)
+
+   - Implemented Unicode string send method support.
+
 - 10/31/2020 (Version 1.3)
 
    - Included Delphi 10.4 auto-install support.
@@ -108,7 +112,7 @@ Find and set destination window handle by the name defined in `DestWindowName` p
 ```delphi
 procedure Send(ID: Word); overload;
 procedure Send(ID: Word; N: Integer); overload;
-procedure Send(ID: Word; A: AnsiString); overload;
+procedure Send(ID: Word; const A: string); overload;
 procedure Send(ID: Word; P: Pointer; Size: Cardinal); overload;
 procedure Send(ID: Word; S: TMemoryStream); overload;
 ```
@@ -128,7 +132,7 @@ The overloads methods allows you to send:
 - A command with a memory data stream, using `S` parameter.
 
 ```delphi
-function AsString: AnsiString;
+function AsString: string;
 ```
 
 Use this function inside the OnMessage event to get a message data as String type.
@@ -161,7 +165,7 @@ This method will occur in the destination app when a message is received. The `F
 
 The `Result` parameter allows you to set a result code to return to the sender application (the sender application should use `GetResult` function right after use `Send` method to read this result code).
 
-You can use the `AsString`, `AsInteger` or `AsStream` methods to read messages as String and Integer data types.
+You can use the `AsString`, `AsInteger` or `AsStream` methods to get message data content as specific type.
 
 ## How to send and read custom types
 
