@@ -105,8 +105,6 @@ procedure Register;
 
 implementation
 
-uses Vcl.Forms;
-
 const STR_VERSION = '1.4';
 
 procedure Register;
@@ -179,15 +177,10 @@ procedure TDzTalkApp.WndProc(var Msg: TMessage);
 begin
   if Msg.Msg = CONST_WM then //CopyData message
   begin
-    if not FSynchronous then ReplyMessage(Msg.Result);
+    if not FSynchronous then
+      ReplyMessage(Msg.Result);
 
-    try
-      Msg_CopyData( TWMCopyData(Msg) );
-    except
-      Application.HandleException(Self);
-    end;
-
-    //Msg.Result := 0;
+    Msg_CopyData( TWMCopyData(Msg) );
   end
     else
       Msg.Result := DefWindowProc(WinHandle, Msg.Msg, Msg.WParam, Msg.LParam);
