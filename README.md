@@ -19,6 +19,10 @@
 
 ## What's New
 
+- 11/28/2020 (Version 1.5)
+
+   - FMX support.
+
 - 11/01/2020 (Version 1.4)
 
    - Implemented Unicode string send method support.
