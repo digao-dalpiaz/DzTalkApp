@@ -22,6 +22,10 @@
 
 ## What's New
 
+- 03/13/2021 (Version 1.8)
+
+   - Removed CompInstall.exe from component sources due to AV false positive warning (now you can get it directly from CompInstall repository).
+
 - 02/01/2021 (Version 1.7)
 
    - Removed Delphi XE2 from the list of environments as it was never possible to compile in this version.
@@ -68,7 +72,9 @@ DzTalkApp allows you to send data between distinct applications. You can send si
 
 ### Auto install
 
-Close Delphi IDE and run **CompInstall.exe** app to auto install component into Delphi.
+1. Download Component Installer from: https://github.com/digao-dalpiaz/CompInstall/releases/latest
+2. Put **CompInstall.exe** into the component repository sources folder.
+3. Close Delphi IDE and run **CompInstall.exe** app.
 
 ### Manual install
 
