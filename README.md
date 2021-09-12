@@ -22,6 +22,13 @@
 
 ## What's New
 
+- 09/12/2021 (Version 1.9)
+
+   - Delphi 11 auto-install support.
+
+<details>
+  <summary>Click here to view the entire changelog</summary>
+
 - 03/13/2021 (Version 1.8)
 
    - Removed CompInstall.exe from component sources due to AV false positive warning (now you can get it directly from CompInstall repository).
@@ -63,6 +70,8 @@
    - Add Result Code possibility.
    - Add method to send Stream data.
    - OnMessage event declaration changed. :warning:
+   
+</details>
 
 ## Component Description
 

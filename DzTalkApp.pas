@@ -105,7 +105,7 @@ procedure Register;
 
 implementation
 
-const STR_VERSION = '1.8';
+const STR_VERSION = '1.9';
 
 procedure Register;
 begin
