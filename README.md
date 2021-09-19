@@ -93,7 +93,7 @@ DzTalkApp allows you to send data between distinct applications. You can send si
 4. If you want to use Win64 platform, select this platform and Build again.
 5. Add sub-path Win32\Release to the Library paths at Tools\Options using 32-bit option, and if you have compiled to 64 bit platform, add sub-path Win64\Release using 64-bit option.
 
-Supports Delphi XE3..Delphi 10.4
+Supports Delphi XE3..Delphi 11
 
 ## How to use
 
